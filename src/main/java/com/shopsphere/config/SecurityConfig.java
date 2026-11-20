@@ -1,4 +1,4 @@
-﻿package com.shopsphere.config;
+package com.shopsphere.config;
 
 import com.shopsphere.security.JwtAuthenticationFilter;
 
@@ -83,4 +83,3 @@ public class SecurityConfig {
         return http.build();
     }
 }
-
