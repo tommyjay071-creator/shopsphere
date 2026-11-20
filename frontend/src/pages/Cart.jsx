@@ -7,6 +7,7 @@ import {
   ArrowRight,
   ShieldCheck,
   Truck,
+  CheckCircle2,
 } from "lucide-react";
 
 import {
@@ -14,6 +15,7 @@ import {
   createCart,
   removeCartItem,
   checkoutCart,
+  updateCartItemQuantity,
 } from "../services/api";
 
 import "./Cart.css";
@@ -23,6 +25,7 @@ function Cart() {
   const [loading, setLoading] = useState(true);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [error, setError] = useState("");
+  const [completedOrder, setCompletedOrder] = useState(null);
 
   async function loadCart() {
   try {
@@ -81,41 +84,82 @@ function Cart() {
     }
   }
 
-  async function handleCheckout() {
-    try {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        setError("Please login to checkout.");
-        return;
-      }
-
-      setCheckoutLoading(true);
-      setError("");
-
-      const order = await checkoutCart(
-        token,
-        cart.id
-      );
-
-      setCart({
-        ...cart,
-        items: [],
-      });
-
-      alert(
-        `Order #${order.id} placed successfully!`
-      );
-    } catch (error) {
-      console.error(error);
-
-      setError(
-        error.message || "Checkout failed."
-      );
-    } finally {
-      setCheckoutLoading(false);
-    }
+  async function handleQuantityChange(itemId, newQuantity) {
+  if (newQuantity < 1) {
+    return;
   }
+
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    setError("Please login to update your cart.");
+    return;
+  }
+
+  // Update the UI immediately
+  const previousCart = cart;
+
+  const updatedItems = cart.items.map((item) =>
+    item.id === itemId
+      ? { ...item, quantity: newQuantity }
+      : item
+  );
+
+  setCart({
+    ...cart,
+    items: updatedItems,
+  });
+
+  try {
+    const updatedCart = await updateCartItemQuantity(
+      token,
+      cart.id,
+      itemId,
+      newQuantity
+    );
+
+    // Use the backend response as the final state
+    setCart(updatedCart);
+    setError("");
+  } catch (error) {
+    console.error("Quantity update error:", error);
+
+    // Revert the UI if the backend update fails
+    setCart(previousCart);
+
+    setError(error.message || "Could not update quantity.");
+  }
+}
+
+  async function handleCheckout() {
+  try {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      setError("Please login to checkout.");
+      return;
+    }
+
+    setCheckoutLoading(true);
+    setError("");
+
+    const order = await checkoutCart(token, cart.id);
+
+    setCart({
+      ...cart,
+      items: [],
+    });
+
+    setCompletedOrder(order);
+
+  } catch (error) {
+    console.error("Checkout error:", error);
+
+    setError(error.message || "Checkout failed.");
+  } finally {
+    setCheckoutLoading(false);
+  }
+}
 
   if (loading) {
     return (
@@ -153,6 +197,45 @@ function Cart() {
     );
   }
 
+
+  if (completedOrder) {
+  return (
+    <main className="cart-page order-success-page">
+      <div className="order-success-card">
+        <div className="order-success-icon">
+          <CheckCircle2 size={48} />
+        </div>
+
+        <span className="order-success-label">
+          ORDER CONFIRMED
+        </span>
+
+        <h1>Thank you for your order!</h1>
+
+        <p>
+          Your order has been placed successfully.
+          Thank you for shopping with ShopSphere.
+        </p>
+
+        <div className="order-number">
+          <span>ORDER NUMBER</span>
+          <strong>#{completedOrder.id}</strong>
+        </div>
+
+        <div className="order-success-actions">
+          <a href="/orders" className="view-orders-button">
+            View My Orders
+            <ArrowRight size={17} />
+          </a>
+
+          <a href="/products" className="continue-shopping-button">
+            Continue Shopping
+          </a>
+        </div>
+      </div>
+    </main>
+  );
+}
   const items = cart?.items ?? [];
 
   const total = items.reduce(
@@ -284,27 +367,38 @@ function Cart() {
 
                     <div className="cart-quantity">
 
-                      <button
-                        type="button"
-                        disabled
-                        title="Quantity updates coming soon"
-                      >
-                        <Minus size={14} />
-                      </button>
+                     <button
+                     type="button"
+                     onClick={() =>
+                     handleQuantityChange(
+                     item.id,
+                     item.quantity - 1
+      )
+    }
+    disabled={item.quantity <= 1}
+    aria-label={`Decrease ${item.product.name} quantity`}
+  >
+    <Minus size={14} />
+  </button>
 
-                      <span>
-                        {item.quantity}
-                      </span>
+  <span>
+    {item.quantity}
+  </span>
 
-                      <button
-                        type="button"
-                        disabled
-                        title="Quantity updates coming soon"
-                      >
-                        <Plus size={14} />
-                      </button>
+  <button
+    type="button"
+    onClick={() =>
+      handleQuantityChange(
+        item.id,
+        item.quantity + 1
+      )
+    }
+    aria-label={`Increase ${item.product.name} quantity`}
+  >
+    <Plus size={14} />
+  </button>
 
-                    </div>
+</div>
 
                     <div className="cart-item-total">
                       <span>Total</span>

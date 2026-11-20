@@ -1,3 +1,4 @@
+
 package com.shopsphere.dto;
 
 public class LoginResponse {
@@ -7,19 +8,22 @@ public class LoginResponse {
     private String lastName;
     private String email;
     private String token;
+    private String role;
 
     public LoginResponse(
             Long id,
             String firstName,
             String lastName,
             String email,
-            String token) {
+            String token,
+            String role) {
 
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.token = token;
+        this.role = role;
     }
 
     public Long getId() {
@@ -40,5 +44,9 @@ public class LoginResponse {
 
     public String getToken() {
         return token;
+    }
+
+    public String getRole() {
+        return role;
     }
 }

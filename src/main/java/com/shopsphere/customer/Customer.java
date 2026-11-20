@@ -1,5 +1,7 @@
 package com.shopsphere.customer;
 
+import com.shopsphere.security.Role;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -9,6 +11,10 @@ public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Enumerated(EnumType.STRING)
+@Column(nullable = false)
+private Role role = Role.CUSTOMER;
 
     @Column(nullable = false)
     private String firstName;
@@ -26,6 +32,14 @@ public class Customer {
     public Long getId() {
         return id;
     }
+
+    public Role getRole() {
+    return role;
+}
+
+public void setRole(Role role) {
+    this.role = role;
+}
 
     public void setId(Long id) {
         this.id = id;

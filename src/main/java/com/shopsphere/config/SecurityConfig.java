@@ -39,13 +39,17 @@ public class SecurityConfig {
                                 SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/api/customers/register",
-                                "/api/customers/login",
-                                "/api/products/**"
-                        ).permitAll()
-                        .anyRequest().authenticated()
-                )
+        .requestMatchers(
+                "/api/customers/register",
+                "/api/customers/login",
+                "/api/products/**",
+                "/api/ai/chat"
+        ).permitAll()
+
+        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+        .anyRequest().authenticated()
+)
 
                 .addFilterBefore(
                         jwtAuthenticationFilter,

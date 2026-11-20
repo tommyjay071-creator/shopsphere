@@ -1,3 +1,4 @@
+
 package com.shopsphere.service;
 
 import com.shopsphere.dto.LoginRequest;
@@ -7,6 +8,7 @@ import com.shopsphere.security.JwtService;
 import com.shopsphere.dto.CustomerRequest;
 import com.shopsphere.dto.CustomerResponse;
 import com.shopsphere.repository.CustomerRepository;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -56,27 +58,31 @@ public class CustomerService {
         );
     }
 
-   public LoginResponse login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request) {
 
-    Customer customer = customerRepository.findByEmail(request.getEmail())
-            .orElseThrow(() ->
-                    new RuntimeException("Invalid email or password"));
+        Customer customer = customerRepository.findByEmail(request.getEmail())
+                .orElseThrow(() ->
+                        new RuntimeException("Invalid email or password"));
 
-    if (!passwordEncoder.matches(
-            request.getPassword(),
-            customer.getPassword())) {
+        if (!passwordEncoder.matches(
+                request.getPassword(),
+                customer.getPassword())) {
 
-        throw new RuntimeException("Invalid email or password");
+            throw new RuntimeException("Invalid email or password");
+        }
+
+        String token = jwtService.generateToken(
+                customer.getEmail(),
+                customer.getRole()
+        );
+
+        return new LoginResponse(
+                customer.getId(),
+                customer.getFirstName(),
+                customer.getLastName(),
+                customer.getEmail(),
+                token,
+                customer.getRole().name()
+        );
     }
-
-    String token = jwtService.generateToken(customer.getEmail());
-
-    return new LoginResponse(
-            customer.getId(),
-            customer.getFirstName(),
-            customer.getLastName(),
-            customer.getEmail(),
-            token
-    );
-  }
 }

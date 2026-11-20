@@ -9,18 +9,66 @@
 
   --bg-primary: #060914;
   --bg-secondary: #0b1020;
+  --bg-tertiary: #111827;
 
   --glass-bg: rgba(255, 255, 255, 0.06);
   --glass-border: rgba(255, 255, 255, 0.1);
 
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
+  --text-muted: #64748b;
 
   --accent: #8b5cf6;
   --accent-light: #a78bfa;
   --accent-dark: #7c3aed;
 
   --success: #34d399;
+  --danger: #f87171;
+  --warning: #fbbf24;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.18);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.22);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.28);
+
+  --input-bg: rgba(255, 255, 255, 0.05);
+  --input-border: rgba(255, 255, 255, 0.1);
+
+  --card-bg: rgba(255, 255, 255, 0.05);
+  --card-border: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="light"] {
+  color: #1e293b;
+  background: #f8fafc;
+
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f1f5f9;
+
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(15, 23, 42, 0.08);
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+
+  --accent: #7c3aed;
+  --accent-light: #8b5cf6;
+  --accent-dark: #6d28d9;
+
+  --success: #059669;
+  --danger: #dc2626;
+  --warning: #d97706;
+
+  --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 16px 40px rgba(15, 23, 42, 0.12);
+
+  --input-bg: #ffffff;
+  --input-border: rgba(15, 23, 42, 0.12);
+
+  --card-bg: rgba(255, 255, 255, 0.8);
+  --card-border: rgba(15, 23, 42, 0.08);
 }
 
 * {
@@ -51,6 +99,24 @@ body {
   color: var(--text-primary);
   font-family: "Inter", sans-serif;
   overflow-x: hidden;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
+}
+
+[data-theme="light"] body {
+  background:
+    radial-gradient(
+      circle at 15% 10%,
+      rgba(124, 58, 237, 0.08),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 85% 80%,
+      rgba(16, 185, 129, 0.06),
+      transparent 30%
+    ),
+    var(--bg-primary);
 }
 
 a {
@@ -59,7 +125,9 @@ a {
 }
 
 button,
-input {
+input,
+textarea,
+select {
   font-family: inherit;
 }
 
@@ -72,14 +140,12 @@ button {
   color: white;
 }
 
-/* Scrollbar */
-
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #060914;
+  background: var(--bg-secondary);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -90,8 +156,6 @@ button {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(139, 92, 246, 0.7);
 }
-
-/* Accessibility */
 
 @media (prefers-reduced-motion: reduce) {
   *,

@@ -1,5 +1,6 @@
 import { Search, SlidersHorizontal, Sparkles, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import { getProducts } from "../services/api";
 import ProductCard from "../components/ProductCard";
@@ -7,10 +8,13 @@ import ProductCard from "../components/ProductCard";
 import "./Products.css";
 
 function Products() {
-  const [products, setProducts] = useState([]);
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("All");
-  const [loading, setLoading] = useState(true);
+ const [products, setProducts] = useState([]);
+const [searchParams] = useSearchParams();
+const [search, setSearch] = useState(
+  () => searchParams.get("search") ?? ""
+);
+const [category, setCategory] = useState("All");
+const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadProducts() {

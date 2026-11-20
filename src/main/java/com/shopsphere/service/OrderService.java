@@ -42,6 +42,21 @@ public class OrderService {
                 .getName();
     }
 
+    @Transactional(readOnly = true)
+public List<Order> getAllOrdersForAdmin() {
+    return orderRepository.findAll();
+}
+
+@Transactional
+public Order updateOrderStatusForAdmin(Long id, OrderStatus status) {
+    Order order = orderRepository.findById(id)
+            .orElseThrow(() ->
+                    new RuntimeException("Order with id " + id + " not found"));
+
+    order.setStatus(status);
+    return orderRepository.save(order);
+}
+
     @Transactional
     public Order createOrderFromCart(Long cartId) {
 
